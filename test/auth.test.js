@@ -29,7 +29,6 @@ describe('user auth', () => {
         password: 'password'
       })
       .then(res => {
-        console.log('bodyodyody', res.body)
         expect(res.body).toEqual({
           _id: expect.any(String),
           username: 'Claire',
@@ -39,5 +38,27 @@ describe('user auth', () => {
       });
   });
 
+  it('signs in user', async() => {
+    const user = await User.create({
+      username: 'Claire',
+      profilePhoto: 'claire is cool url',
+      password: 'password'
+    });
+
+    return request(app)
+      .post('/api/v1/auth/signin')
+      .send({ 
+        username: 'Claire',
+        password: 'password'
+      })
+      .then(res => {
+        expect(res.body).toEqual({
+          _id: expect.any(String),
+          username: user.username,
+          profilePhoto: 'claire is cool url',
+          __v: 0
+        });
+      });
+  });
 });
 
