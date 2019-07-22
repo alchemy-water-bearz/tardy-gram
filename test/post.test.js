@@ -28,13 +28,24 @@ describe('Post Routes', () => {
         profilePhoto: 'some url',
         password: 'password'
       })
-    ))
+    ));
+    return request(app)
       .post('/api/v1/posts')
       .send({ 
         user, 
         photoURL: 'another url',
-        comment: 'Danny and Claire are awesome',
+        caption: 'Danny and Claire are awesome',
         tags: ['mobbing', 'alchemy']
+      })
+      .then(res => {
+        expect(res.body).toEqual({
+          _id: expect.any(String), 
+          __v: 0,
+          user: user._id.toString(),
+          photoURL: 'another url',
+          caption: 'Danny and Claire are awesome',
+          tags: ['mobbing', 'alchemy']
+        });
       });
   });
 })
