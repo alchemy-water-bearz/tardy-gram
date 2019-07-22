@@ -60,5 +60,29 @@ describe('user auth', () => {
         });
       });
   });
+
+  it('verify that username and email are correct', async() => {
+    await User.create({
+      username: 'Claire',
+      profilePhoto: 'claire is cool url',
+      password: 'password'
+    });
+    const claire = request.agent(app);
+    return claire
+      .post('/api/v1/auth/signin')
+      .send({ username: 'Claire', password: 'password' })
+      .then(() => {
+        return claire
+          .get('/api/v1/auth/verify');
+      })
+      .then(res => {
+        expect(res.body).toEqual({
+          _id: expect.any(String),
+          username: 'Claire',
+          profilePhoto: 'claire is cool url',
+          __v: 0
+        });
+      });
+  });
 });
 
