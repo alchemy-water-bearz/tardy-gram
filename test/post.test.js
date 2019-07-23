@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 
 const User = require('../lib/models/User');
 const Post = require('../lib/models/Post');
+const Comment = require('../lib/models/Comment');
 
 describe('Post Routes', () => {
   beforeAll(() => {
@@ -96,16 +97,32 @@ describe('Post Routes', () => {
         tags: ['moblife', 'pillows']
       })
     ));
+    const comment = JSON.parse(JSON.stringify(
+      await Comment.create({
+        commentBy: user._id,
+        post: post._id,
+        comment: 'this is a comment'
+      })
+    ));
+    console.log(comment);
     return request(app)
       .get(`/api/v1/posts/${post._id}`)
       .then(res => {
+        console.log(res.body);
         expect(res.body).toEqual({
           _id: expect.any(String),
           user: user._id.toString(),
           photoURL: 'a url link',
           caption: 'this is  a caption',
           tags: ['moblife', 'pillows'],
-          __v: 0
+          __v: 0,
+          comments: [{ 
+            _id: comment._id.toString(),
+            post: comment.post, 
+            commentBy: comment.commentBy,
+            comment: comment.comment
+          }]
+
         });
       });
   });
