@@ -150,4 +150,43 @@ describe('Post Routes', () => {
       });
   });
 
+  it('can delete', async() => {
+    const user = await User.create({
+      username: 'Claire',
+      profilePhoto: 'claire is cool url',
+      password: 'password'
+    });
+    const claire = request.agent(app);
+    return claire
+      .post('/api/v1/auth/signin')
+      .send({ username: 'Claire', password: 'password' })
+      .then(() => {
+        return claire
+          .get('/api/v1/auth/verify');
+      })
+      .then(async() => {
+        const post = JSON.parse(JSON.stringify(
+          await Post.create({ 
+            user: user._id,
+            photoURL: 'a url link',
+            caption: 'this is a caption',
+            tags: ['moblife', 'pillows']
+          })
+        ));
+            
+        return claire
+          .delete(`/api/v1/posts/${post._id}`)
+          .then(res => {
+            expect(res.body).toEqual({
+              user: user._id.toString(),
+              _id: expect.any(String),
+              photoURL: 'a url link',
+              caption: 'this is a caption',
+              tags: ['moblife', 'pillows'],
+              __v: 0
+            });
+          });  
+      });
+  });
+  
 });
