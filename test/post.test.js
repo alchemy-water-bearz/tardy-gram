@@ -99,7 +99,6 @@ describe('Post Routes', () => {
     return request(app)
       .get(`/api/v1/posts/${post._id}`)
       .then(res => {
-        console.log('the body', res.body)
         expect(res.body).toEqual({
           _id: expect.any(String),
           user: user._id.toString(),
@@ -108,6 +107,46 @@ describe('Post Routes', () => {
           tags: ['moblife', 'pillows'],
           __v: 0
         });
+      });
+  });
+
+  it('can patch by ID if auth verified', async() => {
+    const user = await User.create({
+      username: 'Claire',
+      profilePhoto: 'claire is cool url',
+      password: 'password'
+    });
+    const claire = request.agent(app);
+    return claire
+      .post('/api/v1/auth/signin')
+      .send({ username: 'Claire', password: 'password' })
+      .then(() => {
+        return claire
+          .get('/api/v1/auth/verify');
+      })
+      .then(async() => {
+        const post = JSON.parse(JSON.stringify(
+          await Post.create({ 
+            user: user._id,
+            photoURL: 'a url link',
+            caption: 'this is  a caption',
+            tags: ['moblife', 'pillows']
+          })
+        ));
+            
+        return request(app)
+          .patch(`/api/v1/posts/${post._id}`)
+          .send({ caption: 'updated caption' })
+          .then(res => {
+            expect(res.body).toEqual({
+              user: user._id,
+              _id: expect.any(String),
+              photoURL: 'a url link',
+              caption: 'updated caption',
+              tags: ['moblife', 'pillows'],
+              __v: 0
+            });
+          });  
       });
   });
 });
