@@ -79,4 +79,35 @@ describe('Post Routes', () => {
 
       });
   });
+
+  it('get post by ID', async() => {
+    const user = JSON.parse(JSON.stringify(
+      await User.create({ 
+        username: 'Danny',
+        profilePhoto: 'some url',
+        password: 'password'
+      })
+    ));
+    const post = JSON.parse(JSON.stringify(
+      await Post.create({ 
+        user: user._id,
+        photoURL: 'a url link',
+        caption: 'this is  a caption',
+        tags: ['moblife', 'pillows']
+      })
+    ));
+    return request(app)
+      .get(`/api/v1/posts/${post._id}`)
+      .then(res => {
+        console.log('the body', res.body)
+        expect(res.body).toEqual({
+          _id: expect.any(String),
+          user: user._id.toString(),
+          photoURL: 'a url link',
+          caption: 'this is  a caption',
+          tags: ['moblife', 'pillows'],
+          __v: 0
+        });
+      });
+  });
 });
