@@ -134,12 +134,12 @@ describe('Post Routes', () => {
           })
         ));
             
-        return request(app)
+        return claire
           .patch(`/api/v1/posts/${post._id}`)
           .send({ caption: 'updated caption' })
           .then(res => {
             expect(res.body).toEqual({
-              user: user._id,
+              user: user._id.toString(),
               _id: expect.any(String),
               photoURL: 'a url link',
               caption: 'updated caption',
@@ -149,4 +149,5 @@ describe('Post Routes', () => {
           });  
       });
   });
+
 });
