@@ -43,13 +43,10 @@ describe('Post Routes', () => {
   });
 
   it('get post by ID', async() => {
-    const user = getUsers()[0];
     const post = getPosts()[0];
     const comments = getComments().filter(c => {
       return c.post === post._id;
-    })
-    comments.forEach(c => delete c.__v)
-    console.log(comments);
+    });
     return getAgent()
       .get(`/api/v1/posts/${post._id}`)
       .then(res => {
@@ -65,44 +62,21 @@ describe('Post Routes', () => {
       });
   });
 
-  it('can patch by ID if auth verified', async() => {
-    const user = await User.create({
-      username: 'Claire',
-      profilePhoto: 'claire is cool url',
-      password: 'password'
-    });
-    const claire = request.agent(app);
-    return claire
-      .post('/api/v1/auth/signin')
-      .send({ username: 'Claire', password: 'password' })
-      .then(() => {
-        return claire
-          .get('/api/v1/auth/verify');
-      })
-      .then(async() => {
-        const post = JSON.parse(JSON.stringify(
-          await Post.create({ 
-            user: user._id,
-            photoURL: 'a url link',
-            caption: 'this is  a caption',
-            tags: ['moblife', 'pillows']
-          })
-        ));
-            
-        return claire
-          .patch(`/api/v1/posts/${post._id}`)
-          .send({ caption: 'updated caption' })
-          .then(res => {
-            expect(res.body).toEqual({
-              user: user._id.toString(),
-              _id: expect.any(String),
-              photoURL: 'a url link',
-              caption: 'updated caption',
-              tags: ['moblife', 'pillows'],
-              __v: 0
-            });
-          });  
-      });
+  it('can patch by ID if auth verified', () => {
+    const post = getPosts()[0];
+    return getAgent()
+      .patch(`/api/v1/posts/${post._id}`)
+      .send({ caption: 'updated caption' })
+      .then(res => {
+        expect(res.body).toEqual({
+          user: expect.any(String),
+          _id: expect.any(String),
+          photoURL: expect.any(String),
+          caption: 'updated caption',
+          tags: expect.any(Array),
+          __v: 0
+        });
+      });  
   });
 
   it('can delete', async() => {
