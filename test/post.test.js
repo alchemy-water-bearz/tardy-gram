@@ -43,46 +43,24 @@ describe('Post Routes', () => {
   });
 
   it('get post by ID', async() => {
-    const user = JSON.parse(JSON.stringify(
-      await User.create({ 
-        username: 'Danny',
-        profilePhoto: 'some url',
-        password: 'password'
-      })
-    ));
-    const post = JSON.parse(JSON.stringify(
-      await Post.create({ 
-        user: user._id,
-        photoURL: 'a url link',
-        caption: 'this is  a caption',
-        tags: ['moblife', 'pillows']
-      })
-    ));
-    const comment = JSON.parse(JSON.stringify(
-      await Comment.create({
-        commentBy: user._id,
-        post: post._id,
-        comment: 'this is a comment'
-      })
-    ));
-    return request(app)
+    const user = getUsers()[0];
+    const post = getPosts()[0];
+    const comments = getComments().filter(c => {
+      return c.post === post._id;
+    })
+    comments.forEach(c => delete c.__v)
+    console.log(comments);
+    return getAgent()
       .get(`/api/v1/posts/${post._id}`)
       .then(res => {
-        console.log(res.body);
         expect(res.body).toEqual({
           _id: expect.any(String),
-          user: user._id.toString(),
-          photoURL: 'a url link',
-          caption: 'this is  a caption',
-          tags: ['moblife', 'pillows'],
+          user: expect.any(String),
+          photoURL: post.photoURL,
+          caption: post.caption,
+          tags: post.tags,
           __v: 0,
-          comments: [{ 
-            _id: comment._id.toString(),
-            post: comment.post, 
-            commentBy: comment.commentBy,
-            comment: comment.comment
-          }]
-
+          comments: expect.any(Array)
         });
       });
   });
