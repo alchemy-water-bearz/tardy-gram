@@ -1,25 +1,9 @@
-require('dotenv').config();
+const { getUsers, getAgent } = require('./data-helpers');
 
 const request = require('supertest');
 const app = require('../lib/app');
-const connect = require('../lib/utils/connect');
-const mongoose = require('mongoose');
-
-const User = require('../lib/models/User');
 
 describe('user auth', () => {
-  beforeAll(() => {
-    connect();
-  });
-
-  beforeEach(() => {
-    return mongoose.connection.dropDatabase();
-  });
-
-  afterAll(() => {
-    return mongoose.connection.close();
-  });
-
   it('signs up a user', () => {
     return request(app)
       .post('/api/v1/auth/signup')
@@ -39,47 +23,31 @@ describe('user auth', () => {
   });
 
   it('signs in user', async() => {
-    const user = await User.create({
-      username: 'Claire',
-      profilePhoto: 'claire is cool url',
-      password: 'password'
-    });
-
+    const user = getUsers()[0];
     return request(app)
       .post('/api/v1/auth/signin')
       .send({ 
-        username: 'Claire',
+        username: user.username,
         password: 'password'
       })
       .then(res => {
         expect(res.body).toEqual({
           _id: expect.any(String),
           username: user.username,
-          profilePhoto: 'claire is cool url',
+          profilePhoto: expect.any(String),
           __v: 0
         });
       });
   });
 
   it('verify that username and email are correct', async() => {
-    await User.create({
-      username: 'Claire',
-      profilePhoto: 'claire is cool url',
-      password: 'password'
-    });
-    const claire = request.agent(app);
-    return claire
-      .post('/api/v1/auth/signin')
-      .send({ username: 'Claire', password: 'password' })
-      .then(() => {
-        return claire
-          .get('/api/v1/auth/verify');
-      })
+    return getAgent()
+      .get('/api/v1/auth/verify')
       .then(res => {
         expect(res.body).toEqual({
           _id: expect.any(String),
-          username: 'Claire',
-          profilePhoto: 'claire is cool url',
+          username: expect.any(String),
+          profilePhoto: expect.any(String),
           __v: 0
         });
       });

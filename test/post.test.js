@@ -104,7 +104,6 @@ describe('Post Routes', () => {
         comment: 'this is a comment'
       })
     ));
-    console.log(comment);
     return request(app)
       .get(`/api/v1/posts/${post._id}`)
       .then(res => {

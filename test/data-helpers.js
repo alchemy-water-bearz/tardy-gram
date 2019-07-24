@@ -29,7 +29,7 @@ beforeEach(async() => {
 
   return await agent
     .post('/api/v1/auth/signin')
-    .send({ username: users[0], password: 'password ' });
+    .send({ username: users[0].username, password: 'password' });
 });
 
 afterAll(() => {
