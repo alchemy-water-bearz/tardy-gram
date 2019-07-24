@@ -42,11 +42,17 @@ describe('Post Routes', () => {
       });
   });
 
+  it('get list of 10 posts with most comments', () => {
+    return getAgent()
+      .get('/api/v1/posts/popular')
+      .then(res => {
+        expect(res.body[0].commentCount).toBeGreaterThan(res.body[9].commentCount);
+        expect(res.body).toHaveLength(10);
+      });
+  });
+
   it('get post by ID', async() => {
     const post = getPosts()[0];
-    const comments = getComments().filter(c => {
-      return c.post === post._id;
-    });
     return getAgent()
       .get(`/api/v1/posts/${post._id}`)
       .then(res => {
@@ -94,4 +100,5 @@ describe('Post Routes', () => {
         });
       });  
   });
+
 });
