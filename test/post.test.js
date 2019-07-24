@@ -1,5 +1,6 @@
 const { getAgent, getUsers, getPosts, getComments } = require('./data-helpers');
-
+const request = require('supertest');
+const app = require('../lib/app');
 
 describe('Post Routes', () => {
 
@@ -23,34 +24,21 @@ describe('Post Routes', () => {
       });
   });
 
-  it('GET all posts', async() => {
-    const user = JSON.parse(JSON.stringify(
-      await User.create({ 
-        username: 'Danny',
-        profilePhoto: 'some url',
-        password: 'password'
-      })
-    ));
-    const post = JSON.parse(JSON.stringify(
-      await Post.create({ 
-        user: user._id,
-        photoURL: 'a url link',
-        caption: 'this is  a caption',
-        tags: ['moblife', 'pillows']
-      })
-    ));
-    return request(app)
+  it('GET all posts', () => {
+    const posts = getPosts();
+    return getAgent()
       .get('/api/v1/posts')
       .then(res => {
-        expect(res.body).toEqual([{
-          _id: expect.any(String),
-          user: user._id,
-          photoURL: 'a url link',
-          caption: 'this is  a caption',
-          tags: ['moblife', 'pillows'],
-          __v: 0
-        }]);
-
+        posts.forEach(post => {
+          expect(res.body).toContainEqual({
+            user: post.user,
+            photoURL: post.photoURL,
+            caption: post.caption,
+            tags: post.tags,
+            _id: expect.any(String),
+            __v: 0
+          });
+        });
       });
   });
 

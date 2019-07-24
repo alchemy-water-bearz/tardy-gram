@@ -3,7 +3,7 @@ const Post = require('../lib/models/Post');
 const Comment = require('../lib/models/Comment');
 const chance = require('chance').Chance();
 
-module.exports = async({ users = 10, posts = 100, comments = 100 } = { users: 10, posts: 100, comments: 100 }) => {
+module.exports = async({ users = 2, posts = 5, comments = 5 } = { users: 5, posts: 5, comments: 5 }) => {
   const createdUsers = await User.create(
     [...Array(users)].map(() => ({
       username: chance.animal({ type: 'grassland' }),
@@ -15,7 +15,7 @@ module.exports = async({ users = 10, posts = 100, comments = 100 } = { users: 10
   const createdPost = await Post.create(
     [...Array(posts)].map(() => ({
       user: chance.pickone(createdUsers)._id,
-      profilePhoto: chance.url({ extensions: ['gif', 'jpg', 'png'] }),
+      photoURL: chance.url({ extensions: ['gif', 'jpg', 'png'] }),
       caption: chance.sentence(),
       tags: [chance.hashtag()]
     }))
