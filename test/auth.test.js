@@ -52,5 +52,14 @@ describe('user auth', () => {
         });
       });
   });
+
+  it('10 users with most comments', () => {
+    return getAgent()
+      .get('/api/v1/auth/users/leader')
+      .then(res => {
+        expect(res.body[0].commentCount).toBeGreaterThan(res.body[9].commentCount);
+        expect(res.body).toHaveLength(10);
+      });
+  });
 });
 
