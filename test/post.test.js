@@ -51,6 +51,15 @@ describe('Post Routes', () => {
       });
   });
 
+  it('can list the most prolific wierdos', () => {
+    return getAgent()
+      .get('/api/v1/posts/prolific')
+      .then(res => {
+        expect(res.body[0].postCount).toBeGreaterThan(res.body[9].postCount);
+        expect(res.body).toHaveLength(10);
+      });
+  });
+
   it('get post by ID', async() => {
     const post = getPosts()[0];
     return getAgent()
