@@ -21,6 +21,15 @@ describe('comments routes', () => {
       });  
   });
 
+  it('get 10 users with most total comments on posts', () => {
+    return getAgent()
+      .get('/api/v1/comments/popular')
+      .then(res => {
+        expect(res.body[0].commentsOnUserPosts).toBeGreaterThan(res.body[9].commentsOnUserPosts);
+        expect(res.body).toHaveLength(10);
+      });
+  });
+
   it('delete comment', async() => {
     const post = getPosts()[0];
     return getAgent()
