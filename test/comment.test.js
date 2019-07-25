@@ -30,6 +30,15 @@ describe('comments routes', () => {
       });
   });
 
+  it('get 10 users with highest avg comments/post', () => {
+    return getAgent()
+      .get('/api/v1/comments/impact')
+      .then(res => {
+        expect(res.body[0].commentsOnAllPostsByUser).toBeGreaterThan(res.body[9].commentsOnAllPostsByUser);
+        expect(res.body).toHaveLength(10);
+      });
+  });
+
   it('delete comment', async() => {
     const post = getPosts()[0];
     return getAgent()
