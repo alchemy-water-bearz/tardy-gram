@@ -33,7 +33,7 @@ describe('user auth', () => {
       .then(res => {
         expect(res.body).toEqual({
           _id: expect.any(String),
-          username: user.username,
+          username: expect.any(String),
           profilePhoto: expect.any(String),
           __v: 0
         });

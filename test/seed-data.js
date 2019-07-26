@@ -44,7 +44,7 @@ module.exports = async({ users = 12, posts = 50, comments = 100 } = { users: 12,
 
   return {
     users: createdUsers,
-    posts: [...createdPost, userPost],
-    comments: [...createdComment, userComment]
+    posts: [userPost, ...createdPost],
+    comments: [userComment, ...createdComment]
   };
 };

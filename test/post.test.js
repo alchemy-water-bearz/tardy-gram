@@ -1,6 +1,4 @@
-const { getAgent, getUsers, getPosts, getComments } = require('./data-helpers');
-const request = require('supertest');
-const app = require('../lib/app');
+const { getAgent, getUsers, getPosts } = require('./data-helpers');
 
 describe('Post Routes', () => {
 
